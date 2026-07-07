@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Du lịch Hà Tiên 2N1Đ — FPT Hậu Giang</title>
+<style>
+:root{color-scheme:light;--navy:#0b3d66;--blue:#1e6fb8;--teal:#0f9d9d;--sun:#f5a623;--bg:#f4f8fb;--card:#ffffff;--line:#e2eaf1;--ink:#12303f;--muted:#5b7385;--green:#1a9d5a;--greenbg:#e6f6ed;--redbg:#fdecec;--red:#d8434a;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;padding:0 0 48px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+.hero{background:linear-gradient(135deg,var(--navy),var(--blue) 60%,var(--teal));color:#fff;padding:38px 16px 30px;text-align:center}
+.hero .kick{font-size:13px;letter-spacing:2px;text-transform:uppercase;opacity:.85;font-weight:600}
+.hero h1{font-size:30px;margin:8px 0 6px;font-weight:800}
+.hero .dest{font-size:16px;opacity:.95}
+.hero .meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.chip{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:18px;box-shadow:0 1px 3px rgba(16,48,63,.05)}
+h2{font-size:18px;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+h2 .dot{width:8px;height:20px;background:var(--sun);border-radius:3px}
+/* progress */
+.progress-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.stat{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center}
+.stat .num{font-size:22px;font-weight:800;color:var(--navy)}
+.stat .lbl{font-size:12px;color:var(--muted);margin-top:2px}
+.bar{height:16px;background:#e7eef4;border-radius:999px;overflow:hidden}
+.bar > span{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--green));width:0;transition:width .4s}
+.bar-lbl{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin:6px 2px 0}
+/* itinerary */
+.day{border-left:3px solid var(--blue);padding:2px 0 2px 16px;margin-bottom:16px}
+.day h3{font-size:15px;color:var(--blue);margin-bottom:6px}
+.day ul{list-style:none}
+.day li{position:relative;padding:3px 0 3px 18px;font-size:14px;color:var(--ink)}
+.day li:before{content:"";position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.day li b{color:var(--navy)}
+/* payment */
+.pay{display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:center}
+.pay .info div{padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.pay .info b{color:var(--navy);display:inline-block;min-width:120px}
+.qr{background:var(--bg);border:2px dashed var(--blue);border-radius:12px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:13px;padding:12px}
+.qr .ic{font-size:38px;margin-bottom:6px}
+.note{background:#fff8ec;border:1px solid #f6e2b8;border-radius:10px;padding:12px 14px;font-size:13px;color:#8a6a1f;margin-top:14px}
+/* table */
+.tbl-tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filt{border:1px solid var(--line);background:var(--card);color:var(--muted);padding:7px 12px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600}
+.filt.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.search{flex:1;min-width:140px;border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{background:var(--navy);color:#fff;padding:9px 8px;text-align:left;font-weight:600;position:sticky;top:0}
+thead th:last-child{text-align:center}
+tbody td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr.grp td{background:#eef4f9;font-weight:700;color:var(--navy);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.name b{color:var(--navy)}
+.fam{font-size:12px;color:var(--muted)}
+.amt{white-space:nowrap;font-weight:700;color:var(--navy);text-align:right}
+.badge{border:none;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;cursor:pointer;min-width:92px}
+.badge.paid{background:var(--greenbg);color:var(--green)}
+.badge.unpaid{background:var(--redbg);color:var(--red)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.foot{text-align:center;color:var(--muted);font-size:12px;margin-top:22px}
+.reset{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;margin-top:10px}
+#admin-tools{display:none;gap:8px;flex-wrap:wrap;margin-top:10px}
+#adminbar{display:none;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border-radius:12px;padding:12px 16px;margin-top:18px;font-size:13px;line-height:1.5}
+#adminbar b{color:var(--sun)}
+body.ro .badge{cursor:default}
+.stamp{color:var(--green);font-weight:700}
+body.editing .edit,body.editing .medit{outline:2px dashed var(--sun);outline-offset:2px;border-radius:4px;cursor:text;background:#fffdf5}
+body.editing .edit:focus,body.editing .medit:focus{outline:2px solid var(--blue);background:#fff}
+.medit{display:inline-block;min-width:12px}
+.edithint{display:none;background:#fff8ec;border:1px solid #f6e2b8;border-radius:8px;padding:8px 12px;font-size:12.5px;color:#8a6a1f;margin-top:8px}
+body.editing .edithint{display:block}
+@media(max-width:640px){.pay{grid-template-columns:1fr}.progress-grid{grid-template-columns:1fr 1fr}.hero h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="kick">Trường TH, THCS &amp; THPT FPT Hậu Giang</div>
+  <h1 class="edit" data-ek="0">🏖️ Nghỉ mát Hà Tiên 2N1Đ</h1>
+  <div class="dest edit" data-ek="1">Kiên Giang · Bungalow ven biển</div>
+  <div class="meta">
+    <span class="chip edit" data-ek="2">📅 08 – 09/07/2026</span>
+    <span class="chip edit" data-ek="3">👥 45 thành viên</span>
+    <span class="chip edit" data-ek="4">🌙 2 ngày 1 đêm</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div id="adminbar" style="display: none;">
+    🔑 <b>Chế độ quản trị</b> — chỉ bạn thấy bản này. Tick trạng thái “Đã nộp”, sau đó bấm
+    <b>“⬇ Xuất trang công khai”</b> để tạo file gửi mọi người xem. Người xem không sửa được.
+  </div>
+
+  <!-- TIẾN ĐỘ -->
+  <div class="card">
+    <h2><span class="dot"></span>Tiến độ thu tiền</h2>
+    <div class="progress-grid">
+      <div class="stat"><div class="num" id="s-paid">26</div><div class="lbl">Đã nộp (người)</div></div>
+      <div class="stat"><div class="num" id="s-remain">2</div><div class="lbl">Chưa nộp (người)</div></div>
+      <div class="stat"><div class="num" id="s-pct">95%</div><div class="lbl">Hoàn thành</div></div>
+    </div>
+    <div class="bar"><span id="bar" style="width: 95%;"></span></div>
+    <div class="bar-lbl"><span id="collected">Đã thu: 78.750.000 đ</span><span id="total">Tổng: 82.950.000 đ</span></div>
+  </div>
+
+  <!-- HƯỚNG DẪN NỘP TIỀN -->
+  <div class="card">
+    <h2><span class="dot"></span>Hướng dẫn nộp tiền</h2>
+    <div class="pay">
+      <div class="info">
+        <div><b>Ngân hàng:</b> <span class="edit" data-ek="5">TPBank (Tiên Phong)</span></div>
+        <div><b>Số tài khoản:</b> <span class="edit" data-ek="6">3012 0608 139</span></div>
+        <div><b>Chủ tài khoản:</b> <span class="edit" data-ek="7">NGUYEN THANH CONG LUAN</span></div>
+        <div><b>Nội dung CK:</b> <span class="edit" data-ek="8">MãNV_HọTên_HaTien</span></div>
+        <div><b>Hạn nộp:</b> <span class="edit" data-ek="9">09/07/2026</span></div>
+      </div>
+      <div class="qr" id="qrbox" style="border-style:solid;border-color:#1e6fb8;background:#fff;padding:10px">
+        <img src="data:image/png;base64,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" alt="Mã QR chuyển tiền VietQR TPBank" style="width:100%;max-width:180px;height:auto;display:block">
+        <div style="margin-top:6px;color:var(--navy);font-weight:700;font-size:12px">VietQR · TPBank</div>
+      </div>
+    </div>
+    <div class="note edit" data-ek="10">💡 Vui lòng ghi <b>đúng nội dung chuyển khoản</b> để trưởng đoàn đối soát. Sau khi chuyển, nhắn trưởng đoàn để được cập nhật trạng thái “Đã nộp”.</div>
+  </div>
+
+  <!-- LỊCH TRÌNH -->
+  <div class="card">
+    <h2><span class="dot"></span>Lịch trình dự kiến</h2>
+    <div class="day">
+      <h3 class="edit" data-ek="11">Ngày 1 — 08/07/2026</h3>
+      <ul>
+        <li class="edit" data-ek="12"><b>Sáng:</b> Tập trung, khởi hành đi Hà Tiên</li>
+        <li class="edit" data-ek="13"><b>Trưa:</b> Dùng cơm, nhận phòng Bungalow ven biển</li>
+        <li class="edit" data-ek="14"><b>Chiều:</b> Tự do tắm biển, vui chơi, team building</li>
+        <li class="edit" data-ek="15"><b>Tối:</b> Tiệc Gala Dinner &amp; giao lưu</li>
+      </ul>
+    </div>
+    <div class="day">
+      <h3 class="edit" data-ek="16">Ngày 2 — 09/07/2026</h3>
+      <ul>
+        <li class="edit" data-ek="17"><b>Sáng:</b> Ăn sáng, tắm biển, tham quan</li>
+        <li class="edit" data-ek="18"><b>Trưa:</b> Trả phòng, dùng cơm trưa</li>
+        <li class="edit" data-ek="19"><b>Chiều:</b> Mua đặc sản, khởi hành về — kết thúc chương trình</li>
+      </ul>
+    </div>
+    <div class="note edit" data-ek="20">🛎️ Lịch trình chi tiết có thể điều chỉnh theo thực tế của đơn vị lữ hành.</div>
+  </div>
+
+  <!-- BẢNG THEO DÕI -->
+  <div class="card">
+    <h2><span class="dot"></span>Danh sách &amp; theo dõi nộp tiền</h2>
+    <div class="tbl-tools">
+      <button class="filt active" data-f="all">Tất cả</button>
+      <button class="filt" data-f="unpaid">Chưa nộp</button>
+      <button class="filt" data-f="paid">Đã nộp</button>
+      <input class="search" id="search" placeholder="🔍 Tìm tên / mã NV...">
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th style="width:38px">#</th><th>Cán bộ</th><th style="width:120px">Bố trí phòng</th><th style="width:110px;text-align:right">Chi phí</th><th style="width:110px">Trạng thái</th></tr></thead>
+        <tbody id="tbody"><tr class="grp"><td colspan="5">Nhóm gia đình</td></tr><tr><td>1</td>
+      <td class="name"><b class="medit" data-id="92996" data-f="name">Gia đình Anh Lục Tấn Hảo</b><div class="fam">Mã: 92996 · <span class="medit" data-id="92996" data-f="fam">Vợ + 2 con</span></div></td>
+      <td><span class="medit" data-id="92996" data-f="room">P4 FAM Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="92996" data-f="amt">6.300.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="92996">✓ Đã nộp</button></td></tr><tr><td>2</td>
+      <td class="name"><b class="medit" data-id="355882" data-f="name">Gia đình Anh Lê Hữu Kỳ Quan&nbsp;</b><div class="fam">Mã: 355882 · <span class="medit" data-id="355882" data-f="fam">Vợ + 1 con</span></div></td>
+      <td><span class="medit" data-id="355882" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="355882" data-f="amt">5.670.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="355882">✓ Đã nộp</button></td></tr><tr><td>3</td>
+      <td class="name"><b class="medit" data-id="352638" data-f="name">Gia đình Chị Đỗ Ngọc Lan Phương</b><div class="fam">Mã: 352638 · <span class="medit" data-id="352638" data-f="fam">2 cháu</span></div></td>
+      <td><span class="medit" data-id="352638" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="352638" data-f="amt">5.040.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="352638">✓ Đã nộp</button></td></tr><tr><td>4</td>
+      <td class="name"><b class="medit" data-id="167656" data-f="name">Gia đình Chị Nguyễn Thị Ngọc Huyền</b><div class="fam">Mã: 167656 · <span class="medit" data-id="167656" data-f="fam">Chồng</span></div></td>
+      <td><span class="medit" data-id="167656" data-f="room">DB1 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="167656" data-f="amt">4.200.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="167656">✓ Đã nộp</button></td></tr><tr><td>5</td>
+      <td class="name"><b class="medit" data-id="356838" data-f="name">Gia đình Chị Lưu Ái Như</b><div class="fam">Mã: 356838 · <span class="medit" data-id="356838" data-f="fam">Chồng + 1 con</span></div></td>
+      <td><span class="medit" data-id="356838" data-f="room">DB1 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="356838" data-f="amt">5.670.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="356838">✓ Đã nộp</button></td></tr><tr><td>6</td>
+      <td class="name"><b class="medit" data-id="331097" data-f="name">Gia đình Anh Nguyễn Thành Công Luận</b><div class="fam">Mã: 331097 · <span class="medit" data-id="331097" data-f="fam">Vợ + 1 con</span></div></td>
+      <td><span class="medit" data-id="331097" data-f="room">DB1 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="331097" data-f="amt">5.670.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="331097">✓ Đã nộp</button></td></tr><tr><td>7</td>
+      <td class="name"><b class="medit" data-id="356013" data-f="name">Gia đình Chị Huỳnh Thị Tú Ngọc</b><div class="fam">Mã: 356013 · <span class="medit" data-id="356013" data-f="fam">Chồng + 1 con</span></div></td>
+      <td><span class="medit" data-id="356013" data-f="room">DB1 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="356013" data-f="amt">4.200.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="356013">✓ Đã nộp</button></td></tr><tr><td>8</td>
+      <td class="name"><b class="medit" data-id="356016" data-f="name">Gia đình Anh Tiêu Hoàng Phước</b><div class="fam">Mã: 356016 · <span class="medit" data-id="356016" data-f="fam">Vợ + 1 con</span></div></td>
+      <td><span class="medit" data-id="356016" data-f="room">DB1 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="356016" data-f="amt">4.200.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="356016">✓ Đã nộp</button></td></tr><tr><td>9</td>
+      <td class="name"><b class="medit" data-id="356842" data-f="name">Gia đình Anh Võ Hồng Nhật</b><div class="fam">Mã: 356842 · <span class="medit" data-id="356842" data-f="fam">1 con</span></div></td>
+      <td><span class="medit" data-id="356842" data-f="room">P3 Bungalow (ghép)</span></td>
+      <td class="amt"><span class="medit" data-id="356842" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge unpaid" data-id="356842">Chưa nộp</button></td></tr><tr class="grp"><td colspan="5">Nhóm độc thân</td></tr><tr><td>10</td>
+      <td class="name"><b class="medit" data-id="166288" data-f="name">Anh Nguyễn Nhật Minh</b><div class="fam">Mã: 166288</div></td>
+      <td><span class="medit" data-id="166288" data-f="room">P4 FAM Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="166288" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="166288">✓ Đã nộp</button></td></tr><tr><td>11</td>
+      <td class="name"><b class="medit" data-id="166291" data-f="name">Anh Hồ Hoàng Khải</b><div class="fam">Mã: 166291</div></td>
+      <td><span class="medit" data-id="166291" data-f="room">P4 FAM Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="166291" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="166291">✓ Đã nộp</button></td></tr><tr><td>12</td>
+      <td class="name"><b class="medit" data-id="328253" data-f="name">Anh Nguyễn Bá Vinh</b><div class="fam">Mã: 328253</div></td>
+      <td><span class="medit" data-id="328253" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="328253" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge unpaid" data-id="328253">Chưa nộp</button></td></tr><tr><td>13</td>
+      <td class="name"><b class="medit" data-id="331113" data-f="name">Anh Phạm Minh Gia</b><div class="fam">Mã: 331113</div></td>
+      <td><span class="medit" data-id="331113" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="331113" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="331113">✓ Đã nộp</button></td></tr><tr><td>14</td>
+      <td class="name"><b class="medit" data-id="183626" data-f="name">Anh Thái Hoàng Vi</b><div class="fam">Mã: 183626</div></td>
+      <td><span class="medit" data-id="183626" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="183626" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="183626">✓ Đã nộp</button></td></tr><tr><td>15</td>
+      <td class="name"><b class="medit" data-id="185674" data-f="name">Anh Nguyễn Phan Minh Hoài Phương</b><div class="fam">Mã: 185674</div></td>
+      <td><span class="medit" data-id="185674" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="185674" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="185674">✓ Đã nộp</button></td></tr><tr><td>16</td>
+      <td class="name"><b class="medit" data-id="291930" data-f="name">Anh Trương Văn Nhựt</b><div class="fam">Mã: 291930</div></td>
+      <td><span class="medit" data-id="291930" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="291930" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="291930">✓ Đã nộp</button></td></tr><tr><td>17</td>
+      <td class="name"><b class="medit" data-id="356017" data-f="name">Anh Nguyễn Minh Mẫn</b><div class="fam">Mã: 356017</div></td>
+      <td><span class="medit" data-id="356017" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="356017" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="356017">✓ Đã nộp</button></td></tr><tr><td>18</td>
+      <td class="name"><b class="medit" data-id="204142" data-f="name">Anh Tạ Minh Khôi</b><div class="fam">Mã: 204142</div></td>
+      <td><span class="medit" data-id="204142" data-f="room">03 P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="204142" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="204142">✓ Đã nộp</button></td></tr><tr><td>19</td>
+      <td class="name"><b class="medit" data-id="356045" data-f="name">Chị Đinh Thị Cẩm Như</b><div class="fam">Mã: 356045</div></td>
+      <td><span class="medit" data-id="356045" data-f="room">01 P2 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="356045" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="356045">✓ Đã nộp</button></td></tr><tr><td>20</td>
+      <td class="name"><b class="medit" data-id="335944" data-f="name">Chị Nguyễn Kiều Tuyết Như</b><div class="fam">Mã: 335944</div></td>
+      <td><span class="medit" data-id="335944" data-f="room">01 P2 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="335944" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="335944">✓ Đã nộp</button></td></tr><tr><td>21</td>
+      <td class="name"><b class="medit" data-id="356014" data-f="name">Chị Đoàn Thị Phương Thảo</b><div class="fam">Mã: 356014</div></td>
+      <td><span class="medit" data-id="356014" data-f="room">02 P2 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="356014" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="356014">✓ Đã nộp</button></td></tr><tr><td>22</td>
+      <td class="name"><b class="medit" data-id="363640" data-f="name">Chị Dương Thị Kim Kỷ</b><div class="fam">Mã: 363640</div></td>
+      <td><span class="medit" data-id="363640" data-f="room">P2 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="363640" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="363640">✓ Đã nộp</button></td></tr><tr><td>23</td>
+      <td class="name"><b class="medit" data-id="166287" data-f="name">Chị Nguyễn Thị Phương Mai</b><div class="fam">Mã: 166287</div></td>
+      <td><span class="medit" data-id="166287" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="166287" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="166287">✓ Đã nộp</button></td></tr><tr><td>24</td>
+      <td class="name"><b class="medit" data-id="167634" data-f="name">Chị Phạm Thị Uyển Nhi</b><div class="fam">Mã: 167634</div></td>
+      <td><span class="medit" data-id="167634" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="167634" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="167634">✓ Đã nộp</button></td></tr><tr><td>25</td>
+      <td class="name"><b class="medit" data-id="356018" data-f="name">Chị Nguyễn Ngọc Hoàn Mỹ</b><div class="fam">Mã: 356018</div></td>
+      <td><span class="medit" data-id="356018" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="356018" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="356018">✓ Đã nộp</button></td></tr><tr><td>26</td>
+      <td class="name"><b class="medit" data-id="291398" data-f="name">Chị Tạ Duy Ái Vy</b><div class="fam">Mã: 291398</div></td>
+      <td><span class="medit" data-id="291398" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="291398" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="291398">✓ Đã nộp</button></td></tr><tr><td>27</td>
+      <td class="name"><b class="medit" data-id="221167" data-f="name">Chị Nguyễn Thị Kim Huyên</b><div class="fam">Mã: 221167</div></td>
+      <td><span class="medit" data-id="221167" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="221167" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="221167">✓ Đã nộp</button></td></tr><tr><td>28</td>
+      <td class="name"><b class="medit" data-id="209613" data-f="name">Ms.Hazel Marie Caoile</b><div class="fam">Mã: 209613</div></td>
+      <td><span class="medit" data-id="209613" data-f="room">P3 Bungalow</span></td>
+      <td class="amt"><span class="medit" data-id="209613" data-f="amt">2.100.000</span> đ</td>
+      <td style="text-align:center"><button class="badge paid" data-id="209613">✓ Đã nộp</button></td></tr></tbody>
+      </table>
+    </div>
+    <div id="admin-tools" style="display: none;">
+      <button class="reset" id="editmode" style="border-color:var(--sun);color:#b47908;font-weight:700">✏️ Sửa nội dung: TẮT</button>
+      <button class="reset" id="reset">↺ Đặt lại toàn bộ trạng thái</button>
+      <button class="reset" id="export" style="border-color:var(--green);color:var(--green);font-weight:700">⬇ Xuất trang công khai (chỉ xem)</button>
+    </div>
+    <div class="edithint">✏️ <b>Đang bật sửa nội dung.</b> Nhấp vào bất kỳ chữ có viền vàng để sửa: tiêu đề, ngày, thông tin tài khoản, hạn nộp, lịch trình, ghi chú, <b>và tên / gia đình / phòng / chi phí của từng người trong bảng</b>. Sửa xong bấm lại nút để TẮT. Nội dung tự lưu và sẽ đưa vào file công khai khi bạn xuất.</div>
+  </div>
+
+  <div class="foot"><span id="stamp"></span><br>Trang theo dõi tiến độ nộp tiền · FPT Hậu Giang 2026</div>
+</div>
+
+<script id="state-data">window.__STATE__={"mode":"public","paid":{"92996":1,"166287":1,"166288":1,"166291":1,"167634":1,"167656":1,"183626":1,"185674":1,"204142":1,"209613":1,"221167":1,"291398":1,"291930":1,"331097":1,"331113":1,"335944":1,"352638":1,"355882":1,"356013":1,"356014":1,"356016":1,"356017":1,"356018":1,"356045":1,"356838":1,"363640":1},"overrides":{"92996":{"name":"Gia đình Anh Lục Tấn Hảo","room":"P4 FAM Bungalow"},"166287":{"name":"Chị Nguyễn Thị Phương Mai","room":"P3 Bungalow"},"166288":{"name":"Anh Nguyễn Nhật Minh","room":"P4 FAM Bungalow"},"166291":{"name":"Anh Hồ Hoàng Khải","room":"P4 FAM Bungalow"},"167634":{"name":"Chị Phạm Thị Uyển Nhi","room":"P3 Bungalow"},"167656":{"name":"Gia đình Chị Nguyễn Thị Ngọc Huyền","room":"DB1 Bungalow"},"183626":{"name":"Anh Thái Hoàng Vi","room":"P3 Bungalow"},"185674":{"name":"Anh Nguyễn Phan Minh Hoài Phương","room":"P3 Bungalow"},"204142":{"name":"Anh Tạ Minh Khôi"},"209613":{"name":"Ms.Hazel Marie Caoile","room":"P3 Bungalow"},"221167":{"name":"Chị Nguyễn Thị Kim Huyên","room":"P3 Bungalow"},"291398":{"name":"Chị Tạ Duy Ái Vy","room":"P3 Bungalow"},"291930":{"name":"Anh Trương Văn Nhựt","room":"P3 Bungalow"},"328253":{"name":"Anh Nguyễn Bá Vinh","room":"P3 Bungalow"},"331097":{"name":"Gia đình Anh Nguyễn Thành Công Luận","room":"DB1 Bungalow"},"331113":{"name":"Anh Phạm Minh Gia","room":"P3 Bungalow"},"335944":{"name":"Chị Nguyễn Kiều Tuyết Như"},"352638":{"name":"Gia đình Chị Đỗ Ngọc Lan Phương","fam":"2 cháu","room":"P3 Bungalow"},"355882":{"name":"Gia đình Anh Lê Hữu Kỳ Quan ","room":"P3 Bungalow"},"356013":{"name":"Gia đình Chị Huỳnh Thị Tú Ngọc","room":"DB1 Bungalow"},"356014":{"name":"Chị Đoàn Thị Phương Thảo"},"356016":{"name":"Gia đình Anh Tiêu Hoàng Phước","room":"DB1 Bungalow"},"356017":{"name":"Anh Nguyễn Minh Mẫn","room":"P3 Bungalow"},"356018":{"name":"Chị Nguyễn Ngọc Hoàn Mỹ","room":"P3 Bungalow"},"356045":{"name":"Chị Đinh Thị Cẩm Như"},"356838":{"name":"Gia đình Chị Lưu Ái Như","room":"DB1 Bungalow"},"356842":{"name":"Gia đình Anh Võ Hồng Nhật","room":"P3 Bungalow (ghép)"},"363640":{"name":"Chị Dương Thị Kim Kỷ","room":"P2 Bungalow"}},"updated":"11:15:06 7/7/2026"};</script>
+<script>
+const MEMBERS=[
+ {g:"Nhóm gia đình"},
+ {id:"92996",name:"Lục Tấn Hảo",fam:"Vợ + 2 con",room:"01 P4 FAM Bungalow",amt:6300000},
+ {id:"355882",name:"Lê Hữu Kỳ Quan (Nguyễn Như Ý)",fam:"Vợ + 1 con",room:"01 P3 Bungalow",amt:5670000},
+ {id:"352638",name:"Đỗ Ngọc Lan Phương",fam:"2 con",room:"02 P3 Bungalow",amt:5040000},
+ {id:"167656",name:"Nguyễn Thị Ngọc Huyền",fam:"Chồng",room:"01 DB1 Bungalow",amt:4200000},
+ {id:"356838",name:"Lưu Ái Như",fam:"Chồng + 1 con",room:"02 DB1 Bungalow",amt:5670000},
+ {id:"331097",name:"Nguyễn Thành Công Luận",fam:"Vợ + 1 con",room:"03 DB1 Bungalow",amt:5670000},
+ {id:"356013",name:"Huỳnh Thị Tú Ngọc",fam:"Chồng + 1 con",room:"04 DB1 Bungalow",amt:4200000},
+ {id:"356016",name:"Tiêu Hoàng Phước",fam:"Vợ + 1 con",room:"05 DB1 Bungalow",amt:4200000},
+ {id:"356842",name:"Võ Hồng Nhật",fam:"1 con",room:"02 P3 (ghép)",amt:2100000},
+ {g:"Nhóm độc thân"},
+ {id:"166288",name:"Nguyễn Nhật Minh",fam:"",room:"01 P4 FAM Bungalow",amt:2100000},
+ {id:"166291",name:"Hồ Hoàng Khải",fam:"",room:"01 P4 FAM Bungalow",amt:2100000},
+ {id:"328253",name:"Nguyễn Bá Vinh",fam:"",room:"01 P3 Bungalow",amt:2100000},
+ {id:"331113",name:"Phạm Minh Gia",fam:"",room:"01 P3 Bungalow",amt:2100000},
+ {id:"183626",name:"Thái Hoàng Vi",fam:"",room:"01 P3 Bungalow",amt:2100000},
+ {id:"185674",name:"Nguyễn Phan Minh Hoài Phương",fam:"",room:"02 P3 Bungalow",amt:2100000},
+ {id:"291930",name:"Trương Văn Nhựt",fam:"",room:"03 P3 Bungalow",amt:2100000},
+ {id:"356017",name:"Nguyễn Minh Mẫn",fam:"",room:"03 P3 Bungalow",amt:2100000},
+ {id:"204142",name:"Tạ Minh Khôi",fam:"",room:"03 P3 Bungalow",amt:2100000},
+ {id:"356045",name:"Đinh Thị Cẩm Như",fam:"",room:"01 P2 Bungalow",amt:2100000},
+ {id:"335944",name:"Nguyễn Kiều Tuyết Như",fam:"",room:"01 P2 Bungalow",amt:2100000},
+ {id:"356014",name:"Đoàn Thị Phương Thảo",fam:"",room:"02 P2 Bungalow",amt:2100000},
+ {id:"363640",name:"Dương Thị Kim Kỷ",fam:"",room:"02 P2 Bungalow",amt:2100000},
+ {id:"166287",name:"Nguyễn Thị Phương Mai",fam:"",room:"01 P3 Bungalow",amt:2100000},
+ {id:"167634",name:"Phạm Thị Uyển Nhi",fam:"",room:"01 P3 Bungalow",amt:2100000},
+ {id:"356018",name:"Nguyễn Ngọc Hoàn Mỹ",fam:"",room:"01 P3 Bungalow",amt:2100000},
+ {id:"291398",name:"Tạ Duy Ái Vy",fam:"",room:"02 P3 Bungalow",amt:2100000},
+ {id:"221167",name:"Nguyễn Thị Kim Huyên",fam:"",room:"02 P3 Bungalow",amt:2100000},
+ {id:"209613",name:"Hazel Marie Caoile",fam:"",room:"02 P3 Bungalow",amt:2100000},
+];
+const STATE=window.__STATE__||{mode:"admin"};
+const MODE=STATE.mode||"admin";           // "admin" = bạn cập nhật · "public" = chỉ xem
+const KEY="hatien2026_paid";
+const TKEY="hatien2026_text";
+const fmt=n=>n.toLocaleString("vi-VN")+" đ";
+
+// ---- Nội dung sửa được: gán khóa theo thứ tự & khôi phục bản đã lưu ----
+const EDITS=Array.from(document.querySelectorAll(".edit"));
+EDITS.forEach((el,i)=>el.dataset.ek=i);
+if(MODE==="admin"){
+  try{
+    const saved=JSON.parse(localStorage.getItem(TKEY)||"{}");
+    EDITS.forEach((el,i)=>{ if(saved[i]!=null) el.innerHTML=saved[i]; });
+  }catch(e){}
+}
+function saveText(){
+  const map={};
+  EDITS.forEach((el,i)=>map[i]=el.innerHTML);
+  localStorage.setItem(TKEY,JSON.stringify(map));
+}
+let editing=false;
+function toggleEdit(){
+  editing=!editing;
+  document.body.classList.toggle("editing",editing);
+  document.querySelectorAll(".edit,.medit").forEach(el=>{ if(editing) el.setAttribute("contenteditable","true"); else el.removeAttribute("contenteditable"); });
+  const btn=document.getElementById("editmode");
+  btn.textContent = editing ? "✏️ Sửa nội dung: BẬT (bấm để tắt)" : "✏️ Sửa nội dung: TẮT";
+  if(!editing) saveText();
+}
+let paid;
+if(MODE==="admin"){
+  const stored=localStorage.getItem(KEY);
+  paid = stored ? JSON.parse(stored) : Object.assign({}, STATE.paid||{});
+}else{
+  paid = Object.assign({}, STATE.paid||{});
+}
+let filter="all", q="";
+
+// ---- Chỉnh sửa thông tin thành viên (tên/gia đình/phòng/chi phí) ----
+const MKEY="hatien2026_members";
+let overrides = (MODE==="admin") ? JSON.parse(localStorage.getItem(MKEY)||"{}") : (STATE.overrides||{});
+MEMBERS.forEach(m=>{ if(m.id&&overrides[m.id]) Object.assign(m,overrides[m.id]); });
+function ov(id){ return overrides[id]||(overrides[id]={}); }
+function onMemberEdit(el){
+  const id=el.dataset.id, f=el.dataset.f;
+  const m=MEMBERS.find(x=>x.id===id); if(!m)return;
+  const v=el.textContent;
+  if(f==="amt"){ const num=parseInt(v.replace(/\D/g,""))||0; m.amt=num; ov(id).amt=num; stats(); }
+  else { m[f]=v; ov(id)[f]=v; }
+  localStorage.setItem(MKEY,JSON.stringify(overrides));
+}
+
+function save(){ if(MODE==="admin") localStorage.setItem(KEY,JSON.stringify(paid)); }
+function render(){
+  const tb=document.getElementById("tbody");tb.innerHTML="";
+  let n=0;
+  MEMBERS.forEach(m=>{
+    if(m.g){const tr=document.createElement("tr");tr.className="grp";tr.innerHTML=`<td colspan="5">${m.g}</td>`;tb.appendChild(tr);return;}
+    const isPaid=!!paid[m.id];
+    if(filter==="paid"&&!isPaid)return;
+    if(filter==="unpaid"&&isPaid)return;
+    if(q&&!(m.name.toLowerCase().includes(q)||m.id.includes(q)))return;
+    n++;
+    const tr=document.createElement("tr");
+    const famHtml = m.fam ? ' · <span class="medit" data-id="'+m.id+'" data-f="fam">'+m.fam+'</span>' : "";
+    tr.innerHTML=`<td>${n}</td>
+      <td class="name"><b class="medit" data-id="${m.id}" data-f="name">${m.name}</b><div class="fam">Mã: ${m.id}${famHtml}</div></td>
+      <td><span class="medit" data-id="${m.id}" data-f="room">${m.room}</span></td>
+      <td class="amt"><span class="medit" data-id="${m.id}" data-f="amt">${m.amt.toLocaleString("vi-VN")}</span> đ</td>
+      <td style="text-align:center"><button class="badge ${isPaid?'paid':'unpaid'}" data-id="${m.id}">${isPaid?'✓ Đã nộp':'Chưa nộp'}</button></td>`;
+    tb.appendChild(tr);
+  });
+  if(editing) document.querySelectorAll("#tbody .medit").forEach(el=>el.setAttribute("contenteditable","true"));
+  stats();
+}
+function stats(){
+  const ppl=MEMBERS.filter(m=>!m.g);
+  const total=ppl.reduce((s,m)=>s+m.amt,0);
+  const paidPpl=ppl.filter(m=>paid[m.id]);
+  const collected=paidPpl.reduce((s,m)=>s+m.amt,0);
+  document.getElementById("s-paid").textContent=paidPpl.length;
+  document.getElementById("s-remain").textContent=ppl.length-paidPpl.length;
+  const pct=total?Math.round(collected/total*100):0;
+  document.getElementById("s-pct").textContent=pct+"%";
+  document.getElementById("bar").style.width=pct+"%";
+  document.getElementById("collected").textContent="Đã thu: "+fmt(collected);
+  document.getElementById("total").textContent="Tổng: "+fmt(total);
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".badge");
+  if(b){ if(MODE!=="admin")return; const id=b.dataset.id;if(paid[id])delete paid[id];else paid[id]=1;save();render();return;}
+  const f=e.target.closest(".filt");
+  if(f){filter=f.dataset.f;document.querySelectorAll(".filt").forEach(x=>x.classList.toggle("active",x===f));render();}
+});
+document.getElementById("search").addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();render();});
+
+function exportPublic(){
+  if(editing) toggleEdit();          // tắt chế độ sửa & lưu trước khi xuất
+  const clone=document.documentElement.cloneNode(true);
+  clone.querySelectorAll("[contenteditable]").forEach(el=>el.removeAttribute("contenteditable"));
+  // Xoá kiểu hiển thị & lớp của chế độ quản trị để bản công khai không dính thanh admin
+  ["adminbar","admin-tools"].forEach(id=>{const el=clone.querySelector("#"+id); if(el) el.style.display="none";});
+  const cbody=clone.querySelector("body"); if(cbody) cbody.classList.remove("editing");
+  const st=clone.querySelector("#state-data");
+  const payload={mode:"public",paid:paid,overrides:overrides,updated:new Date().toLocaleString("vi-VN")};
+  st.textContent="window.__STATE__="+JSON.stringify(payload)+";";
+  const html="<!DOCTYPE html>\n"+clone.outerHTML;
+  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="du-lich-ha-tien-cong-khai.html";
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+
+// ---- Thiết lập giao diện theo chế độ ----
+if(MODE==="admin"){
+  document.getElementById("adminbar").style.display="block";
+  document.getElementById("admin-tools").style.display="flex";
+  document.getElementById("reset").addEventListener("click",()=>{if(confirm("Đặt lại tất cả về Chưa nộp?")){paid={};save();render();}});
+  document.getElementById("export").addEventListener("click",exportPublic);
+  document.getElementById("editmode").addEventListener("click",toggleEdit);
+  document.addEventListener("input",e=>{
+    if(!editing||!e.target.classList)return;
+    if(e.target.classList.contains("edit")) saveText();
+    else if(e.target.classList.contains("medit")) onMemberEdit(e.target);
+  });
+}else{
+  document.body.classList.add("ro");
+  ["adminbar","admin-tools"].forEach(id=>{const el=document.getElementById(id); if(el) el.style.display="none";});
+  const s=document.getElementById("stamp");
+  if(STATE.updated) s.innerHTML='<span class="stamp">🕒 Cập nhật lúc: '+STATE.updated+'</span>';
+}
+render();
+</script>
+
+
+</body></html>
